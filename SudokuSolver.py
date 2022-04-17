@@ -2,47 +2,47 @@ import numpy as np
 from random import randint
 
 # Check if it's possible to put number at that row
-def check_row(grid, i_row, i_collum, number):
-    for collum in range(9):
-        if number == grid[i_row][collum] and collum != i_collum:
+def check_row(grid, i_row, i_column, number):
+    for column in range(9):
+        if number == grid[i_row][column] and column != i_column:
                 return False
     return True
 
-# Check if it's possible to put number at that collum
-def check_collum(grid, i_row, i_collum, number):
+# Check if it's possible to put number at that column
+def check_column(grid, i_row, i_column, number):
     for row in range(9):
-        if number == grid[row][i_collum] and row != i_row:
+        if number == grid[row][i_column] and row != i_row:
                 return False
     return True
 
 # Check if it's possible to put number at that cell
-def check_cell(grid, i_row, i_collum, number):
+def check_cell(grid, i_row, i_column, number):
     for row in range((i_row // 3) * 3, ((i_row // 3) * 3) + 3):
-        for collum in range((i_collum // 3) * 3, ((i_collum // 3) * 3) + 3):
-            if number == grid[row][collum] and (row != i_row or collum != i_collum):
+        for column in range((i_column // 3) * 3, ((i_column // 3) * 3) + 3):
+            if number == grid[row][column] and (row != i_row or column != i_column):
                 return False
     return True
 
-# Define if it's valid to put number at position i_rox x i_collum in the grid
-def is_valid(grid, i_row, i_collum, number):
+# Define if it's valid to put number at position i_rox x i_column in the grid
+def is_valid(grid, i_row, i_column, number):
     if i_row < 0 or i_row > 8:
         return False
-    if i_collum < 0 or i_collum > 8:
+    if i_column < 0 or i_column > 8:
         return False
     if number < 1 or number > 9:
         return False
     return(
-        check_row(grid, i_row, i_collum, number)
-        and check_collum(grid, i_row, i_collum, number)
-        and check_cell(grid, i_row, i_collum, number)
+        check_row(grid, i_row, i_column, number)
+        and check_column(grid, i_row, i_column, number)
+        and check_cell(grid, i_row, i_column, number)
         )
 
 # Returns the first empty position at the grid
 def find_empty(grid):
     for row in range(9):
-        for collum in range(9):
-            if grid[row][collum] == 0:
-                return (row, collum)
+        for column in range(9):
+            if grid[row][column] == 0:
+                return (row, column)
     return None
 
 # Receive an 9x9 numpy array (sudoku grid) and solve it 
@@ -50,25 +50,25 @@ def solve_sudoku(grid):
     empty = find_empty(grid)
     if not empty:
         return True  
-    row, collum = empty
+    row, column = empty
 
     for number in range(1,10):
-        if is_valid(grid, row, collum, number):
-            grid[row][collum] = number
+        if is_valid(grid, row, column, number):
+            grid[row][column] = number
             
             if solve_sudoku(grid):
                 return True
-            grid[row][collum] = 0
+            grid[row][column] = 0
 
     return False
 
 def permutate_rows(grid, row1, row2):
-    for collum in range(9):
-        temp = grid[row1][collum]
-        grid[row1][collum] = grid[row2][collum]
-        grid[row2][collum] = temp
+    for column in range(9):
+        temp = grid[row1][column]
+        grid[row1][column] = grid[row2][column]
+        grid[row2][column] = temp
 
-def permutate_collums(grid, col1, col2):
+def permutate_columns(grid, col1, col2):
     for row in range(9):
         temp = grid[row][col1]
         grid[row][col1] = grid[row][col2]
@@ -100,9 +100,9 @@ def create_sudoku(empty_percentage):
             break
     
     # Do some permutations to randomize the grid a little more
-    for collum in range(0,3,3):
-        permutate_collums(grid, collum, collum + 2)
-        permutate_collums(grid, collum + 1, collum + 2)
+    for column in range(0,3,3):
+        permutate_columns(grid, column, column + 2)
+        permutate_columns(grid, column + 1, column + 2)
     for row in range(0,3,3):
         permutate_rows(grid, row, row + 2)
         permutate_rows(grid, row + 1, row + 2)
