@@ -50,6 +50,78 @@ def solve_sudoku(grid):
 
     return False
 
+# Receive a list of possible values for a certain position on the grid
+# and remove those who are not possible anymore
+def reduce_possibilities(grid, possible_values, i_row, i_column):
+    # Check the inputs
+    if i_row < 0 or i_row > 8:
+        return False
+    if i_column < 0 or i_column > 8:
+        return False
+    if len(possible_values) <= 1:
+        return False
+    # Remove the possible values fot that position
+    # Check row
+    for column in range(9):
+        for value in possible_values:
+            if grid[i_row][column] == value and i_column != column:
+                possible_values.remove(value)
+    # Check column
+    for row in range(9):
+        for value in possible_values:
+            if grid[row][i_column] == value and i_row != row:
+                possible_values.remove(value)
+    # Check cell
+    for row in range((i_row // 3) * 3, ((i_row // 3) * 3) + 3):
+        for column in range((i_column // 3) * 3, ((i_column // 3) * 3) + 3):
+            for value in possible_values:
+                if grid[row][column] == value:
+                    if i_row != row or i_column != column:
+                        possible_values.remove(value)
+    return True
+
+# Check if the grid have any empty space yet
+def solved(grid):
+    for i in range(9):
+        for j in range(9):
+            if grid[i][j] == 0:
+                return False
+    return True
+
+# This function simulates the way a human would solve a sudoku.
+# It calculates the possible values and, when the 
+# possibilitities is reduced to 1, it fills the grid.
+# I think it does not solve every unique solution puzzle, but that's the best I've got
+def unique_solution(grid):
+    grid = grid.copy()
+    numbers = [n for n in range(1,10)]
+    # Create a list of possible values for each position the grid
+    possible_values = []
+    for i in range(9):
+        possible_values.append([])
+    for i in range(9):
+        for j in range(9):
+            possible_values[i].append([])
+    for i in range(9):
+        for j in range(9):
+            possible_values[i][j] = numbers.copy()
+
+    # Solve the grid by calculating the possible values
+    # once the possible values is reduced to 1, it changes the grid
+    while not solved(grid):
+        before = grid.copy()
+        for i in range(9):
+            for j in range(9):
+                reduce_possibilities(grid, possible_values[i][j], i, j)
+                if len(possible_values[i][j]) == 1:
+                    grid[i][j] = int(possible_values[i][j][0])
+        # If there's no difference between the grid before the loop, means that
+        # the algorithm cannot solve the grid because it have multiple solutions
+        if before.all() == grid.all():
+            return False
+
+    return True
+
 def permutate_rows(grid, row1, row2):
     for column in range(9):
         temp = grid[row1][column]
