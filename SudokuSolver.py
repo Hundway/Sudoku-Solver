@@ -134,32 +134,35 @@ def permutate_columns(grid, col1, col2):
         grid[row][col1] = grid[row][col2]
         grid[row][col2] = temp
 
-def create_sudoku(empty_percentage):
-    # Grants the empty space percantege is valid
-    if empty_percentage < 0 or empty_percentage > 1:
+def create_sudoku(difficulty):
+    # Set empty spaces based on the difficulty
+    if difficulty == "easy":
+        empty_cells = 20
+    elif difficulty == "medium":
+        empty_cells = 40
+    elif difficulty == "hard":
+        empty_cells = 60
+    else:
         return None
-    # Calculate the needed empty spaces
-    empty_cells = int(81 * empty_percentage)
 
-    # Start the sudoku grid with zeros
-    grid = np.zeros((9, 9), dtype=int)
+    # Get a list of random positions
+    rand_pos = [(i,j) for i in range(9) for j in range(9)]
     while True:
-        # Initialize 30 random numbers at the grid
-        for x in range(30):
-            rand_i = randint(0, 8)
-            rand_j = randint(0, 8)
-            rand_n = randint(1, 9)
-            if grid[rand_i][rand_j] != 0:
-                if is_valid(grid, rand_i, rand_j, rand_n):
-                    grid[rand_i][rand_j] = rand_n
-                    if not solve_sudoku:
-                        grid[rand_i][rand_j] = 0
+        rd.shuffle(rand_pos)
+        # Start the sudoku grid with zeros
+        grid = np.zeros((9, 9), dtype=int)
+        # Put about 20 random numbers at the grid
+        for x in range(20):
+            pos = rand_pos[x]
+            rand_n = rd.randint(1, 9)
+            if is_valid(grid, pos[0], pos[1], rand_n):
+                grid[pos[0]][pos[1]] = rand_n
         # Check if the result is a solvable grid
         # if true, solves it and end the loop
         if solve_sudoku(grid):
             break
-    
-    # Do some permutations to randomize the grid a little more
+
+    # Do some permutations to randomize the grid
     for column in range(0,3,3):
         permutate_columns(grid, column, column + 2)
         permutate_columns(grid, column + 1, column + 2)
@@ -167,15 +170,29 @@ def create_sudoku(empty_percentage):
         permutate_rows(grid, row, row + 2)
         permutate_rows(grid, row + 1, row + 2)
 
-    # Remove random cells to match the empty_percentage
-    while empty_cells:
-        rand_i = randint(0, 8)
-        rand_j = randint(0, 8)
-        if grid[rand_i][rand_j] != 0:
-            grid[rand_i][rand_j] = 0
-            empty_cells -= 1    
-    return grid
+    # Remove random cells to match the difficulty
+    # as long as the puzzle remains unique
+    positions = [(i, j) for i in range(9) for j in range(9)]
+    rd.shuffle(positions)
+    
+    # End if the needed empty cells is reached
+    # or when there's no more valid positions to be emptied
+    for pos in positions:
+        # Empty the cell but keep its value
+        temp = grid[pos[0]][pos[1]]
+        grid[pos[0]][pos[1]] = 0
+        empty_cells -= 1
+        # If the puzzle now have multiple solutions,
+        # undo the change and skip to the next position
+        if not unique_solution(grid):
+            grid[pos[0]][pos[1]] = temp
+            empty_cells += 1
+        # End the loop if the needed empty spaces was reached
+        if empty_cells == 0:
+            break
 
+    return grid
+    
 # Returns a solvable value at that position
 def hint(grid, pos):
     grid = grid.copy()
