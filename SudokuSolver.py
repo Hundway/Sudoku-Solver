@@ -1,5 +1,5 @@
 import numpy as np
-from random import randint
+import random as rd
 
 # Define if it's valid to put number at position i_rox x i_column in the grid
 def is_valid(grid, i_row, i_column, number):
@@ -33,9 +33,11 @@ def find_empty(grid):
                 return (row, column)
     return None
 
-# Receive an 9x9 numpy array (sudoku grid) and solve it 
+# Receive an 9x9 numpy array (sudoku grid) and solve using backtracking
 def solve_sudoku(grid):
+    # Get the first empty position
     empty = find_empty(grid)
+    # If there's no empty positions, the grid is solved
     if not empty:
         return True  
     row, column = empty
@@ -43,7 +45,8 @@ def solve_sudoku(grid):
     for number in range(1,10):
         if is_valid(grid, row, column, number):
             grid[row][column] = number
-            
+            # Tries to solve the sudoku with rescurssion using the current
+            # number. If it fails, tries with the next number and so on
             if solve_sudoku(grid):
                 return True
             grid[row][column] = 0
@@ -192,7 +195,7 @@ def create_sudoku(difficulty):
             break
 
     return grid
-    
+
 # Returns a solvable value at that position
 def hint(grid, pos):
     grid = grid.copy()
@@ -206,10 +209,11 @@ def hint(grid, pos):
 
 # Usage example
 def main():
-    sudoku_grid = create_sudoku(0.8)
+    sudoku_grid = create_sudoku("hard")
     print(sudoku_grid)
 
     solve_sudoku(sudoku_grid)
     print(sudoku_grid)
 
-main()
+if __name__ == "__main__":
+    main()
