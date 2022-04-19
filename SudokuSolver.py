@@ -104,6 +104,17 @@ def create_sudoku(empty_percentage):
             empty_cells -= 1    
     return grid
 
+# Returns a solvable value at that position
+def hint(grid, pos):
+    grid = grid.copy()
+    for number in range(1,10):
+        if is_valid(grid, pos[0], pos[1], number):
+            grid[pos[0]][pos[1]] = number
+            if solve_sudoku(grid.copy()):
+                return number
+            grid[pos[0]][pos[1]] = 0
+    return 0
+
 # Usage example
 def main():
     sudoku_grid = create_sudoku(0.8)
