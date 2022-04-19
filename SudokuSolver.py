@@ -1,41 +1,29 @@
 import numpy as np
 from random import randint
 
-# Check if it's possible to put number at that row
-def check_row(grid, i_row, i_column, number):
-    for column in range(9):
-        if number == grid[i_row][column] and column != i_column:
-                return False
-    return True
-
-# Check if it's possible to put number at that column
-def check_column(grid, i_row, i_column, number):
-    for row in range(9):
-        if number == grid[row][i_column] and row != i_row:
-                return False
-    return True
-
-# Check if it's possible to put number at that cell
-def check_cell(grid, i_row, i_column, number):
-    for row in range((i_row // 3) * 3, ((i_row // 3) * 3) + 3):
-        for column in range((i_column // 3) * 3, ((i_column // 3) * 3) + 3):
-            if number == grid[row][column] and (row != i_row or column != i_column):
-                return False
-    return True
-
 # Define if it's valid to put number at position i_rox x i_column in the grid
 def is_valid(grid, i_row, i_column, number):
+    # Check the inputs
     if i_row < 0 or i_row > 8:
         return False
     if i_column < 0 or i_column > 8:
         return False
     if number < 1 or number > 9:
         return False
-    return(
-        check_row(grid, i_row, i_column, number)
-        and check_column(grid, i_row, i_column, number)
-        and check_cell(grid, i_row, i_column, number)
-        )
+    # Check row
+    for column in range(9):
+        if number == grid[i_row][column] and column != i_column:
+                return False
+    # Check column
+    for row in range(9):
+        if number == grid[row][i_column] and row != i_row:
+                return False
+    # Check cell
+    for row in range((i_row // 3) * 3, ((i_row // 3) * 3) + 3):
+        for column in range((i_column // 3) * 3, ((i_column // 3) * 3) + 3):
+            if number == grid[row][column] and (row != i_row or column != i_column):
+                return False
+    return True
 
 # Returns the first empty position at the grid
 def find_empty(grid):
