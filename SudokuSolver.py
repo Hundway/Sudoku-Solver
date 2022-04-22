@@ -104,10 +104,7 @@ def unique_solution(grid):
         possible_values.append([])
     for i in range(9):
         for j in range(9):
-            possible_values[i].append([])
-    for i in range(9):
-        for j in range(9):
-            possible_values[i][j] = numbers.copy()
+            possible_values[i].append(numbers.copy())
 
     # Solve the grid by calculating the possible values
     # once the possible values is reduced to 1, it changes the grid
@@ -175,12 +172,10 @@ def create_sudoku(difficulty):
 
     # Remove random cells to match the difficulty
     # as long as the puzzle remains unique
-    positions = [(i, j) for i in range(9) for j in range(9)]
-    rd.shuffle(positions)
-    
     # End if the needed empty cells is reached
     # or when there's no more valid positions to be emptied
-    for pos in positions:
+    rd.shuffle(rand_pos)
+    for pos in rand_pos:
         # Empty the cell but keep its value
         temp = grid[pos[0]][pos[1]]
         grid[pos[0]][pos[1]] = 0
