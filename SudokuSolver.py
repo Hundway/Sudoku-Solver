@@ -3,13 +3,6 @@ import random as rd
 
 # Define if it's valid to put number at position i_rox x i_column in the grid
 def is_valid(grid, i_row, i_column, number):
-    # Check the inputs
-    if i_row < 0 or i_row > 8:
-        return False
-    if i_column < 0 or i_column > 8:
-        return False
-    if number < 1 or number > 9:
-        return False
     # Check row
     for column in range(9):
         if number == grid[i_row][column] and column != i_column:
@@ -56,13 +49,6 @@ def solve_sudoku(grid):
 # Receive a list of possible values for a certain position on the grid
 # and remove those who are not possible anymore
 def reduce_possibilities(grid, possible_values, i_row, i_column):
-    # Check the inputs
-    if i_row < 0 or i_row > 8:
-        return False
-    if i_column < 0 or i_column > 8:
-        return False
-    if len(possible_values) <= 1:
-        return False
     # Remove the possible values fot that position
     # Check row
     for column in range(9):
@@ -112,7 +98,8 @@ def unique_solution(grid):
         before = grid.copy()
         for i in range(9):
             for j in range(9):
-                reduce_possibilities(grid, possible_values[i][j], i, j)
+                if len(possible_values[i][j]) > 1:
+                    reduce_possibilities(grid, possible_values[i][j], i, j)
                 if len(possible_values[i][j]) == 1:
                     grid[i][j] = int(possible_values[i][j][0])
         # If there's no difference between the grid before the loop, means that
@@ -163,12 +150,12 @@ def create_sudoku(difficulty):
             break
 
     # Do some permutations to randomize the grid
-    for column in range(0,3,3):
-        permutate_columns(grid, column, column + 2)
-        permutate_columns(grid, column + 1, column + 2)
-    for row in range(0,3,3):
-        permutate_rows(grid, row, row + 2)
-        permutate_rows(grid, row + 1, row + 2)
+    for i in range(0, 9, 3):
+        for j in range(0, 9, 3):
+            permutate_columns(grid, rd.randint(0, 2) + i,
+                              rd.randint(0, 2) + i)
+            permutate_rows(grid, rd.randint(0, 2) + i,
+                           rd.randint(0, 2) + i)
 
     # Remove random cells to match the difficulty
     # as long as the puzzle remains unique
